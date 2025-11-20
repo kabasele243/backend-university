@@ -4,16 +4,15 @@
 Process background jobs reliably with failure handling and observability.
 
 ## What You'll Learn
-- Bull/BullMQ internals
+- AWS SQS internals and DLQ configuration
 - Exponential backoff strategies
 - Idempotency patterns
 - Graceful shutdown handling
-- Job prioritization
+- Visibility timeout management
 
 ## Tech Stack
 - Node.js
-- Redis
-- BullMQ
+- AWS SQS
 - PostgreSQL
 
 ## War Story

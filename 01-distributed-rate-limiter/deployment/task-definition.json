@@ -1,0 +1,61 @@
+{
+  "family": "rate-limiter",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::ACCOUNT_ID:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "rate-limiter",
+      "image": "ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/rate-limiter:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "PORT",
+          "value": "3000"
+        },
+        {
+          "name": "TRUST_PROXY",
+          "value": "true"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "REDIS_HOST",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT_ID:secret:rate-limiter/redis:host::"
+        },
+        {
+          "name": "REDIS_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:ACCOUNT_ID:secret:rate-limiter/redis:password::"
+        }
+      ],
+      "healthCheck": {
+        "command": ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/rate-limiter",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

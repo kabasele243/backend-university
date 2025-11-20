@@ -16,6 +16,8 @@ import {
   rateLimiterPresets,
 } from './middleware/rate-limiter.middleware';
 import { IStorageAdapter } from './core/interfaces/rate-limiter.interface';
+import { getMetrics, getMetricsContentType } from './observability';
+import { logger } from './observability/logging/logger';
 
 async function bootstrap() {
   const config = getConfig();
@@ -32,10 +34,10 @@ async function bootstrap() {
   let storage: IStorageAdapter;
 
   if (config.env === 'production' || process.env.USE_REDIS === 'true') {
-    console.log('Using Redis storage adapter');
+    logger.info('Using Redis storage adapter');
     storage = new RedisStorageAdapter(config.redis);
   } else {
-    console.log('Using in-memory storage adapter (development mode)');
+    logger.info('Using in-memory storage adapter (development mode)');
     storage = new MemoryStorageAdapter();
   }
 
@@ -43,7 +45,7 @@ async function bootstrap() {
   const algorithm = config.rateLimitDefaults.algorithm as AlgorithmType;
   const rateLimiter = RateLimiterFactory.create(algorithm, storage);
 
-  console.log(`Rate limiter initialized with ${algorithm} algorithm`);
+  logger.info({ algorithm }, 'Rate limiter initialized');
 
   // ============================================
   // Demo Endpoints with Different Rate Limits
@@ -178,8 +180,16 @@ async function bootstrap() {
   );
 
   // ============================================
-  // Health & Info Endpoints
+  // Health, Metrics & Info Endpoints
   // ============================================
+
+  /**
+   * Prometheus metrics endpoint
+   */
+  app.get('/metrics', async (req: Request, res: Response) => {
+    res.setHeader('Content-Type', getMetricsContentType());
+    res.send(await getMetrics());
+  });
 
   /**
    * Health check - No rate limiting

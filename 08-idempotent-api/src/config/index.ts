@@ -20,6 +20,8 @@ const envSchema = z.object({
     CB_RESET_TIMEOUT: z.string().default("10000").transform(Number),
     // Logging Config
     LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).default("debug"),
+    // Application Config
+    REQUEST_BODY_LIMIT: z.string().default("10kb"),
 });
 
 // Validate process.env

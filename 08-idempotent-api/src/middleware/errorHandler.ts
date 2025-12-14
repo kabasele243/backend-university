@@ -23,10 +23,10 @@ export function errorHandler(
     }
 
     // 2. Generic Internal Server Error
-    logger.error({ err }, "Unhandled Error");
+    req.log.error({ err }, "Unhandled Error");
 
     return res.status(500).json({
         error: "Internal Server Error",
-        // requestId: req.headers["x-request-id"], 
+        requestId: req.requestId,
     });
 }

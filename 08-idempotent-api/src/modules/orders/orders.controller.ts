@@ -1,11 +1,9 @@
-// src/modules/orders/orders.controller.ts
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { CreateOrderInput } from "./orders.schema";
 import { ordersService } from "./orders.service";
-import { logger } from "../../lib/logger";
 
 export class OrdersController {
-    async create(req: Request<{}, {}, CreateOrderInput>, res: Response) {
+    async create(req: Request<{}, {}, CreateOrderInput>, res: Response, next: NextFunction) {
         try {
             // The body is already validated by middleware before it gets here (ideally)
             // But for now, we trust the types or validate manually if not using a middleware
@@ -26,11 +24,10 @@ export class OrdersController {
             });
 
         } catch (err) {
-            logger.error({ err }, "Error creating order");
-            // In production, next(err) to global error handler
-            return res.status(500).json({ error: "Internal Server Error" });
+            next(err);
         }
     }
 }
 
 export const ordersController = new OrdersController();
+

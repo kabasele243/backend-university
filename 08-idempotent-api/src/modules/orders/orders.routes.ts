@@ -14,13 +14,10 @@ const validate = (schema: typeof CreateOrderSchema) => (req: Request, res: Respo
         });
         next();
     } catch (err) {
-        if (err instanceof ZodError) {
-            return res.status(400).json({ errors: (err as ZodError).errors });
-        }
         next(err);
     }
 };
 
-router.post("/", validate(CreateOrderSchema), (req, res) => ordersController.create(req, res));
+router.post("/", validate(CreateOrderSchema), (req, res, next) => ordersController.create(req, res, next));
 
 export default router;

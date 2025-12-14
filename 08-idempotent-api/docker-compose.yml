@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: idempotent_db
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  dynamodb-local:
+    image: amazon/dynamodb-local
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      DYNAMO_ENDPOINT: "http://dynamodb-local:8000"
+    depends_on:
+      - dynamodb-local
+
+volumes:
+  pg_data:

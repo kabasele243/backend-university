@@ -11,10 +11,15 @@ const envSchema = z.object({
     DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
     DYNAMODB_ENDPOINT: z.string().default("http://localhost:8000"),
     AWS_REGION: z.string().default("us-east-1"),
+    // Database Config
+    DATABASE_CONNECTION_LIMIT: z.string().default("10").transform(Number),
+    DATABASE_POOL_TIMEOUT: z.string().default("10").transform(Number),
     // Circuit Breaker Config
     CB_TIMEOUT: z.string().default("5000").transform(Number),
     CB_ERROR_THRESHOLD: z.string().default("50").transform(Number),
     CB_RESET_TIMEOUT: z.string().default("10000").transform(Number),
+    // Logging Config
+    LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).default("debug"),
 });
 
 // Validate process.env

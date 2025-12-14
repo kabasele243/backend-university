@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/app.ts",
+    "dev": "nodemon src/server.ts",
     "build": "tsc",
-    "start": "node dist/app.js",
-    "test": "vitest run"
+    "start": "node dist/server.js",
+    "test": "vitest run --testTimeout 30000"
   },
   "keywords": [],
   "author": "",
@@ -24,12 +24,16 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "^11.10.0",
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.2",
     "@types/pg": "^8.16.0",
     "@types/pino": "^7.0.4",
+    "@types/supertest": "^6.0.3",
     "nodemon": "^3.1.11",
     "prisma": "^5.22.0",
+    "supertest": "^7.1.4",
+    "testcontainers": "^11.10.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "vitest": "^4.0.15",

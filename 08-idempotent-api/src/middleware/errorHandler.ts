@@ -1,4 +1,3 @@
-// src/middleware/errorHandler.ts
 import { Request, Response, NextFunction } from "express";
 import { ZodError } from "zod";
 import { logger } from "../lib/logger";
@@ -25,8 +24,9 @@ export function errorHandler(
 
     // 2. Generic Internal Server Error
     logger.error({ err }, "Unhandled Error");
+
     return res.status(500).json({
         error: "Internal Server Error",
-        requestId: req.headers["x-request-id"], // If we had request tracing
+        // requestId: req.headers["x-request-id"], 
     });
 }

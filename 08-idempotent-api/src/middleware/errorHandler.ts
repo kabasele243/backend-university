@@ -19,7 +19,7 @@ export function errorHandler(
         logger.warn({ err }, "Validation Error");
         return res.status(400).json({
             error: "Validation Error",
-            details: (err as ZodError).errors,
+            details: (err as any).errors,
         });
     }
 

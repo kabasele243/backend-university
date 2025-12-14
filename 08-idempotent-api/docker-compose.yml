@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres@postgres:5432/idempotent_db?schema=public
+      DYNAMODB_ENDPOINT: http://dynamodb-local:8000
+    depends_on:
+      - postgres
+      - dynamodb-local
+
   postgres:
     image: postgres:16-alpine
     environment:

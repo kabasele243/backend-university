@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { CreateOrderInput } from "./orders.schema";
-import { ordersService } from "./orders.service";
+import { IOrdersService } from "./orders.service";
 
 export class OrdersController {
+    constructor(private readonly ordersService: IOrdersService) { }
+
     async create(req: Request<{}, {}, CreateOrderInput>, res: Response, next: NextFunction) {
         try {
             // The body is already validated by middleware before it gets here (ideally)
@@ -11,7 +13,7 @@ export class OrdersController {
 
             const { amount } = req.body;
 
-            const order = await ordersService.createOrder({ amount });
+            const order = await this.ordersService.createOrder({ amount });
 
             // Simulate network delay sending response
             await new Promise((r) => setTimeout(r, 500));
@@ -28,6 +30,4 @@ export class OrdersController {
         }
     }
 }
-
-export const ordersController = new OrdersController();
 

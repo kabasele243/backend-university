@@ -3,7 +3,11 @@ import { prisma } from "../../lib/prisma";
 import { CreateOrderInput } from "./orders.schema";
 import { logger } from "../../lib/logger";
 
-export class OrdersService {
+export interface IOrdersService {
+    createOrder(data: CreateOrderInput): Promise<{ id: string; amount: number; status: string }>;
+}
+
+export class OrdersService implements IOrdersService {
     /**
      * Creates a new order in the database.
      * This method is "pure" business logic and knows nothing about HTTP (req/res).

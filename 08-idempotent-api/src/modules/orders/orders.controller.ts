@@ -2,6 +2,7 @@
 import { Request, Response } from "express";
 import { CreateOrderInput } from "./orders.schema";
 import { ordersService } from "./orders.service";
+import { logger } from "../../lib/logger";
 
 export class OrdersController {
     async create(req: Request<{}, {}, CreateOrderInput>, res: Response) {
@@ -25,7 +26,7 @@ export class OrdersController {
             });
 
         } catch (err) {
-            console.error("[Controller] Error:", err);
+            logger.error({ err }, "Error creating order");
             // In production, next(err) to global error handler
             return res.status(500).json({ error: "Internal Server Error" });
         }

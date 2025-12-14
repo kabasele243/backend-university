@@ -3,6 +3,7 @@ import express from "express";
 import { config } from "./config";
 import { idempotency } from "./middleware/idempotency";
 import ordersRouter from "./modules/orders/orders.routes";
+import { logger } from "./lib/logger";
 
 const app = express();
 app.use(express.json());
@@ -12,5 +13,5 @@ app.use(express.json());
 app.use("/orders", idempotency, ordersRouter);
 
 app.listen(config.PORT, () => {
-    console.log(`Server running on http://localhost:${config.PORT}`);
+    logger.info(`Server running on http://localhost:${config.PORT}`);
 });

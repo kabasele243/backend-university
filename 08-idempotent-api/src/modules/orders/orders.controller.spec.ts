@@ -21,6 +21,7 @@ describe("OrdersController", () => {
         // 3. Mock Express objects
         const req = mockDeep<Request>();
         req.body = { amount: 100 };
+        req.headers = { "x-idempotency-key": "test-key" };
 
         const res = mockDeep<Response>();
         res.status.mockReturnThis(); // Chainable
@@ -32,7 +33,7 @@ describe("OrdersController", () => {
         await controller.create(req, res, next);
 
         // 5. Assert
-        expect(mockService.createOrder).toHaveBeenCalledWith({ amount: 100 });
+        expect(mockService.createOrder).toHaveBeenCalledWith({ amount: 100 }, "test-key");
         expect(res.status).toHaveBeenCalledWith(201);
         expect(res.json).toHaveBeenCalledWith({
             message: "Order created successfully",

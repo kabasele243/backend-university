@@ -10,6 +10,7 @@ const envSchema = z.object({
     PORT: z.string().default("3000").transform(Number),
     DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
     DYNAMODB_ENDPOINT: z.string().default("http://localhost:8000"),
+    AWS_REGION: z.string().default("us-east-1"),
 });
 
 // Validate process.env

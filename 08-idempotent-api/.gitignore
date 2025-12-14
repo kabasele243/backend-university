@@ -4,3 +4,4 @@
 NEXT_STEPS.md
 .env
 /docker
+/dist

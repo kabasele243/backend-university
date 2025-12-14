@@ -12,11 +12,9 @@ export class OrdersController {
             // We'll trust Zod middleware in routes.
 
             const { amount } = req.body;
+            const idempotencyKey = req.headers["x-idempotency-key"] as string;
 
-            const order = await this.ordersService.createOrder({ amount });
-
-            // Simulate network delay sending response
-            await new Promise((r) => setTimeout(r, 500));
+            const order = await this.ordersService.createOrder({ amount }, idempotencyKey);
 
             return res.status(201).json({
                 message: "Order created successfully",

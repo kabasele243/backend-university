@@ -1,7 +1,7 @@
-// src/middleware/idempotency.ts
 import { Request, Response, NextFunction } from "express";
 import { docClient, TABLE_NAME } from "../lib/dynamodb";
-import { PutCommand, GetCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
+import { PutCommand, GetCommand, UpdateCommand, DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { logger } from "../lib/logger";
 
 type IdempotencyState = "IN_PROGRESS" | "COMPLETED" | "FAILED";
 
@@ -69,10 +69,16 @@ export const idempotency = async (req: Request, res: Response, next: NextFunctio
             // If we crashed or errored, we might want to release the lock or mark FAILED.
             // For now, let's assume if status is 2xx/3xx/4xx we save it.
             if (res.statusCode >= 500) {
-                // Server error: Release lock so they can retry? 
-                // Or mark FAILED? Let's mark FAILED and allow retry logic to handle it if needed.
-                // Actually, deleting it often better for 500s so retry works.
-                // But for this demo, let's just save the 500 response.
+                // Server error: Release lock so they can retry
+                try {
+                    await docClient.send(new DeleteCommand({
+                        TableName: TABLE_NAME,
+                        Key: { id }
+                    }));
+                } catch (err) {
+                    logger.error({ err }, "Failed to release lock after 5xx error");
+                }
+                return;
             }
 
             try {
@@ -90,7 +96,7 @@ export const idempotency = async (req: Request, res: Response, next: NextFunctio
                     })
                 )
             } catch (err) {
-                console.error("Failed to save idempotency result", err);
+                logger.error({ err }, "Failed to save idempotency result");
             }
         });
 
@@ -115,7 +121,7 @@ export const idempotency = async (req: Request, res: Response, next: NextFunctio
             }
         }
 
-        console.error("Idempotency Error:", err);
+        logger.error({ err }, "Idempotency Error");
         next(err);
     }
 };
